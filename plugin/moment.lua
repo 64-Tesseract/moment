@@ -80,7 +80,7 @@ function join (ip, port)
     bind_cursor_send(main_socket)
 end
 
--- Sometimes JSON arrives joined together in 1 chunk, like "{...}{...}"
+-- Sometimes JSON arrives joined together in 1 chunk, like "{...} {...}"
 -- Split it and handle disconnections
 function parse_chunks (sock, chunks, id)
     if not chunks then
@@ -186,7 +186,9 @@ function parse_chunk (sock, chunk, id)
 
         vim.schedule(function ()
             local lines = vim.api.nvim_buf_get_lines(buffers[data.buf].buf, 0, -1, false)
-            local syntax = vim.api.nvim_exec("set syntax", {output = true}):match("[^=]+$")
+            local syntax = vim.api.nvim_buf_call(buffers[data.buf].buf, function ()
+                return vim.api.nvim_exec("set syntax", {output = true})
+            end):match("[^=]+$")
             send_socket(sock, {
                 cmd = "set_buf",
                 lines = lines,
