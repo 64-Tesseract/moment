@@ -2,7 +2,8 @@
 A collaborative editing Neovim plugin that isn't:
 - A buggy mess (at least not when you use it normally)
 - 5000 lines long
-- Harder to set up than FTPD
+- Harder to set up than an FTP server
+- Older than Neovim itself
 
 _Everyone's asking for it, so why didn't anyone make it yet? It only took me a week._
 
