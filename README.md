@@ -25,6 +25,11 @@ Or put `moment.lua` in `~/.config/nvim/lua`, and in your `init.nvim`:
 lua require('moment')
 ```
 
+You can also set your username by putting the following in your `init.nvim`, *before* you load the plugin:
+```
+let g:moment_username = 'YourUsernameHere'
+```
+
 ## Commands
 ### Server commands
 `MomentHost <port>`  
