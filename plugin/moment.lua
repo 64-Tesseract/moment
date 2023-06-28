@@ -109,8 +109,16 @@ function parse_chunks (sock, chunks, id)
     end
 
     chunks = chunks:gsub("}" .. "{", "}\n{")
+    unfinished = ""
     for chunk in chunks:gmatch("[^\n]+") do
-        parse_chunk(sock, chunk, id)
+        if parse_chunk(sock, chunk, id) == true then
+            unfinished = ""
+        else
+            unfinished = unfinished .. chunk
+            if parse_chunk(sock, unfinished, id) == true then
+                unfinished = ""
+            end
+        end
     end
 end
 
@@ -120,7 +128,7 @@ function parse_chunk (sock, chunk, id)
     err, _ = pcall(function () data = vim.json.decode(chunk) end)
     if not err then
         notify("Invalid JSON\n" .. chunk)
-        return
+        return false
     end
 
     cmd = data.cmd
@@ -221,6 +229,8 @@ function parse_chunk (sock, chunk, id)
             forward_to_clients(sock, data)
         end
     end
+
+    return true
 end
 
 -- Ask the server for a shared buffer, if it exists and isn't already open
@@ -307,6 +317,7 @@ function bind_buffer_send (sock, buf)
                         send_socket(sock, line_data)
                     end
                 end)
+
             end
         })
     end)
@@ -538,7 +549,7 @@ vim.api.nvim_create_user_command("MomentShare",
         end
 
         if opts.fargs[1] == nil then
-            vim.notify("Missing arguments: MomentNew <name>")
+            vim.notify("Missing arguments: MomentShare <name>")
         end
         new_buffer(opts.fargs[1])
     end,
